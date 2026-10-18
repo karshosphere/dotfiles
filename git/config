@@ -4,6 +4,12 @@
 [rerere]
     enabled = true
 
+[core]
+    excludesfile = ~/.config/dotfiles/git/global_ignore
+
+[push]
+	autoSetupRemote = true
+
 [alias]
     a  = add --all
     ai = add --interactive
@@ -71,7 +77,8 @@
     wr = worktree remove
     wx = worktree prune
 
-    x  = reset
+    x  = reset --soft
+    xh = reset --hard
     xv = revert
     xs = restore
 

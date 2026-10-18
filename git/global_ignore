@@ -17,6 +17,4 @@ Thumbs.db
 .commands
 
 # AI instruction
-.gitmessage
 .claude/settings.local.json
-copilot-instructions.md

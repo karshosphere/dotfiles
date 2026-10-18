@@ -2,22 +2,22 @@
 --# Editor #--------------------------------------------------------------------
 
 vim.pack.add({
-    'https://github.com/tpope/vim-obsession',         --
-    'https://github.com/numToStr/Comment.nvim',       -- easier commenting
-    'https://github.com/kylechui/nvim-surround',      -- more surround actions
-    'https://github.com/karnull/ifdef.nvim',          --
-    'https://github.com/folke/twilight.nvim',         -- dim non-focused code
-    'https://github.com/Djancyp/better-comments.nvim',-- colour coded comments
-    'https://github.com/lukas-reineke/indent-blankline.nvim',
-	'https://github.com/puremourning/vimspector'      -- debugger
+    'https://github.com/numToStr/Comment.nvim',          -- easier commenting
+    'https://github.com/kylechui/nvim-surround',         -- more surround actions
+    'https://github.com/karnull/ifdef.nvim',             -- surrounding #defines
+    'https://github.com/Djancyp/better-comments.nvim',   -- colour coded comments
+	'https://github.com/puremourning/vimspector',        -- debugger
+    'https://github.com/lukas-reineke/indent-blankline.nvim',-- indent guides
+	'https://github.com/YousefHadder/markdown-plus.nvim',    -- markdown preview
 })
-
 
 --# Enable Plugins #------------------------------------------------------------
 
-require('Comment').setup()        -- Better Commenting
-require("nvim-surround").setup()  -- Surround Actions
-require('ifdef').setup()          -- Surrounding #defines
+require('Comment').setup()
+require("nvim-surround").setup()
+require('ifdef').setup()
+
+vim.g.vimspector_enable_mappings = 'HUMAN'
 
 
 --# Keybinds #------------------------------------------------------------------
@@ -57,21 +57,6 @@ require('better-comment').Setup({
 })
 
 
---# Twilight #------------------------------------------------------------------
-
-require('twilight').setup({
-    treesitter = true,
-    context = 1,
-    expand = {
-        "function_declaration",
-        "method_declaration",
-        "method_signature",
-        "ambient_declaration",
-    },
-    exclude = { 'md' }
-})
-
-
 --# Indent Blankline #----------------------------------------------------------
 
 local hooks = require("ibl.hooks")
@@ -101,3 +86,29 @@ require("ibl").setup {
     },
 }
 
+--# Markdown Preview #----------------------------------------------------------
+
+require("markdown-plus").setup()
+
+-- usage
+
+-- <leader>lt +
+--   u    unordered (-)
+--   t    task (- [ ])
+--   n    numbered (1.)
+--   N    numbered paren (1))
+--   l    lowercase letter (a.)
+--   L    uppercase letter (A.)
+--   p    lowercase letter paren (a))
+--   P    uppercase letter paren (A))
+--   c    clear (strip all list markers)
+
+-- clear all highlight: <leader>mF
+
+-- select codeblock: <leader>mc
+
+-- Headings:
+--    Use ]] and [[ to jump between headers quickly
+--    <leader>h+ Higher heading
+--    <leader>h- Lower heading
+--    <leader>h<num> Make that heading

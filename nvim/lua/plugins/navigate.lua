@@ -2,8 +2,8 @@
 --# Navigate #-----------------------------------------------------------------
 
 vim.pack.add({
-    'https://github.com/nvim-telescope/telescope.nvim',  -- 
-    'https://github.com/nvim-lua/plenary.nvim',          -- 
+    'https://github.com/nvim-telescope/telescope.nvim', -- fuzzy finder
+    'https://github.com/nvim-lua/plenary.nvim',         -- telescope dependency
 })
 
 --# Telescope #----------------------------------------------------------------
@@ -34,13 +34,12 @@ telescope.load_extension('noice')
 
 local builtin = require('telescope.builtin')
 
-Map('n', '<leader>z', builtin.git_files)
-Map('n', '<leader>x', builtin.buffers)
-Map('n', '<leader>c', builtin.find_files)
-Map('n', '<leader>m', builtin.marks)
+Map('n', '<space>z', builtin.git_files)
+Map('n', '<space>x', builtin.buffers)
+Map('n', '<space>c', builtin.find_files)
+Map('n', '<space>m', builtin.marks)
 
-Map('n', '<leader>n', ':Telescope noice<CR>')
-Map('n', '<leader>g', builtin.live_grep)
-Map('n', '<leader>v', builtin.registers)
-Map('n', '<leader>k', builtin.keymaps)
-
+Map('n', '<space>n', ':Telescope noice<CR>')
+Map('n', '<sapce>g', builtin.live_grep)
+Map('n', '<space>v', builtin.registers)
+Map('n', '<space>?', builtin.keymaps)

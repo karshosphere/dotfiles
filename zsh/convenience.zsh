@@ -10,7 +10,6 @@ alias tree='eza -T --group-directories-first --icons=always -L'
 alias treg='eza -T --group-directories-first --icons=always --git-ignore -L'
 
 # Easier Calls
-alias c='bat -n'
 alias cat='bat -pp'
 alias cp=ditto
 alias htop=btop
@@ -34,7 +33,7 @@ of() {
 }
 
 # Fixed Path
-i() { c ~/Projects/.Info/$1 }
+i() { bat -n ~/Projects/.Info/$1 }
 alias vols="gt /Volumes/"
 
 # Keyboard Remaps
@@ -56,6 +55,15 @@ alias update='
     figlet "System Packages";
     brew upgrade;
     brew update;
+
+    figlet "Karnull Approved";
+    pushd $DOTFILES > /dev/null && {
+        git pull;
+        pushd generic > /dev/null && { git pull; popd > /dev/null; };
+        popd > /dev/null;
+    };
+    pushd ~/.local/gists > /dev/null && { git pull; popd > /dev/null; };
+    echo;
 
     figlet "Vim Plugins";
     $EDITOR --headless +"lua vim.pack.update()" +"wq" +qa;

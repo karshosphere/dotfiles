@@ -56,6 +56,15 @@ alias update='
     brew upgrade;
     brew update;
 
+    figlet "Karnull Approved";
+    pushd $DOTFILES > /dev/null && {
+        git pull;
+        pushd generic > /dev/null && { git pull; popd > /dev/null; };
+        popd > /dev/null;
+    };
+    pushd ~/.local/gists > /dev/null && { git pull; popd > /dev/null; };
+    echo;
+
     figlet "Vim Plugins";
     $EDITOR --headless +"lua vim.pack.update()" +"wq" +qa;
     echo;

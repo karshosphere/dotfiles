@@ -10,7 +10,6 @@ alias tree='eza -T --group-directories-first --icons=always -L'
 alias treg='eza -T --group-directories-first --icons=always --git-ignore -L'
 
 # Easier Calls
-alias c='bat -n'
 alias cat='bat -pp'
 alias cp=ditto
 alias htop=btop
@@ -34,7 +33,7 @@ of() {
 }
 
 # Fixed Path
-i() { c ~/Projects/.Info/$1 }
+i() { bat -n ~/Projects/.Info/$1 }
 alias vols="gt /Volumes/"
 
 # Keyboard Remaps

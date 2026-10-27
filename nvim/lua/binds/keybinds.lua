@@ -82,7 +82,7 @@ function toggleColumn()
         vim.wo.colorcolumn = ""
     end
 end
-Map('n', '<leader>l', ':lua toggleColumn()<CR>')
+Map('n', '<space>l', ':lua toggleColumn()<CR>')
 
 -- toggle horizontal/vertical panes
 local type = "vertical"

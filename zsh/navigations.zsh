@@ -38,6 +38,7 @@ gt() {
 }
 
 alias p="gt ~/Projects"
+alias b="gt .."
 alias docs="gt ~/Documents"
 alias down="gt ~/Downloads"
 alias conf="cd $DOTFILES"

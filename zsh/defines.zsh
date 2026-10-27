@@ -40,7 +40,7 @@ bindkey '^[L' forward-word         # Alt+L -> forward one word
 bindkey '^[J' end-of-line          # Alt+J -> end of line
 bindkey '^[K' beginning-of-line    # Alt+K -> start of line
 
-# Ctrl+X Ctrl+E -> edit the current command line in $EDITOR
+# Ctrl+G -> edit the current command line in $EDITOR
 autoload -Uz edit-command-line
 zle -N edit-command-line
 bindkey '^G' edit-command-line

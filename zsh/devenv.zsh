@@ -1,4 +1,3 @@
-
 #- DEVELOPMENT -------------------------------------------------------------------------------------
 #- shortcuts for common dev actions ----------------------------------------------------------------
 
@@ -19,9 +18,7 @@ alias vic='vi ./src c h'
 # Hack Scripts -------------------------------------------------------------------------------------
 
 alias figlet='figlet -w $(tput cols)'
-alias m='glow -w $(tput cols)'
 alias c='clear -x'
-alias findf="find . -type f -iname"
 
 alias g=git
 alias G='git status -s --show-stash --ignore-submodule 2> /dev/null'
@@ -32,8 +29,23 @@ alias pins='
     popd > /dev/null 2>&1;
 '
 
-alias cupdate='find . -maxdepth 1 -type f -iname ".copier-*-answers.yml" \
-        -exec copier update --trust --defaults --answers-file {} \;'
+cupdate() {
+	local answers_file
+	answers_file=$(find . -type f -iname ".copier-*-answers.yml" | fzf)
+	if [[ -z $answers_file ]]; then
+		echo "No answers file selected."
+		return 1
+	fi
+
+	dir=$(dirname "$answers_file")
+	file_name=$(basename "$answers_file")
+
+    echo -e "\033[36m! Updating project in directory: \033[33m$dir\033[0m"
+
+	pushd "$dir" > /dev/null || return 1
+	copier update --trust --defaults --answers-file "$file_name"
+	popd > /dev/null || return 1
+}
 
 alias ctags='ctags --recurse=yes --tag-relative=yes --exclude=.git --extras=+q -f ./.tags'
 
@@ -54,4 +66,3 @@ rmspace() {
 
     print -r -- "cleaned up $#files file(s)"
 }
-

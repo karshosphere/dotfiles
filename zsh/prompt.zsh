@@ -10,7 +10,7 @@ precmd() {
 
     local git_root
     git_root=$(git rev-parse --show-toplevel 2>/dev/null) || {
-        PROMPT=$'\n'"${PROMPT_ICON}"$'  %F{12}%~%f\n%F{4}'"$prompeter"' %f'
+        PROMPT=$'\n'"${PROMPT_ICON}"$' %F{12}%~%f\n%F{4}'"$prompeter"' %f'
             return
         }
 
@@ -80,7 +80,7 @@ precmd() {
     (( behind )) && sync+="⇣$behind"
     (( $#sync )) && parts_joined="%F{13}(${(j: :)sync})%F{2} ${parts_joined}"
 
-	PROMPT=$'\n'"%B${PROMPT_ICON}  %F{10}${project}%b${rel} %F{7}on %F{2} %F{11}%B${branch}%b \
+	PROMPT=$'\n'"%B${PROMPT_ICON} %F{10}${project}%b${rel} %F{7}on %F{2} %F{11}%B${branch}%b \
 %F{2}${parts_joined}"$'\n%F{9}'"$prompeter"' %f'
 }
 

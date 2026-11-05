@@ -31,10 +31,16 @@ alias update='
     figlet "Karnull Approved";
     pushd ~/.config/dotfiles > /dev/null && {
         git pull;
-        pushd generic > /dev/null && { git pull; popd > /dev/null; };
+        pushd generic > /dev/null && {
+            git switch main;
+            git pull;
+            git switch "chore/cloud-updates";
+            git rebase main;
+            popd > /dev/null;
+        };
         popd > /dev/null;
     };
-    pushd ~/.local/gists > /dev/null && { git pull; popd > /dev/null; };
+    pushd $GISTS > /dev/null && { git pull; popd > /dev/null; };
     echo;
 
     figlet "Vim Plugins";

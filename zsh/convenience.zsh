@@ -1,4 +1,3 @@
-
 #- CONVENIENCE -------------------------------------------------------------------------------------
 #- configs specific to macos -----------------------------------------------------------------------
 
@@ -45,23 +44,32 @@ fixkeyboard() {
 #- System Packages ---------------------------------------------------------------------------------
 
 alias pkga='brew install'
-alias pkgr='brew uninstall --zap'
+alias pkgr='mo uninstall'
 alias pkgs='brew search'
 alias pkgl='brew list'
 alias pkgi='brew info'
-alias pkgx='brew cleanup --prune=all'
+alias pkgx='brew cleanup --prune=all; mo clean; mo installer'
 
 alias update='
     figlet "System Packages";
     brew upgrade;
     brew update;
 
-    figlet "Karnull Approved";
+	echo
+    figlet "Repos Pull";
+	echo -e "\nDotfiles\n========"
     pushd $DOTFILES > /dev/null && {
         git pull;
-        pushd generic > /dev/null && { git pull; popd > /dev/null; };
+        pushd generic > /dev/null && {
+			git switch main
+			git pull
+            git switch "chore/mac-updates"
+			git rebase main
+			popd > /dev/null
+		};
         popd > /dev/null;
     };
+	echo -e "\nGists\n====="
     pushd ~/.local/gists > /dev/null && { git pull; popd > /dev/null; };
     echo;
 
@@ -73,4 +81,3 @@ alias update='
     brew cleanup --prune=all;
     brew autoremove;
 '
-

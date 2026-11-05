@@ -13,10 +13,21 @@ export DOTFILES="${${(%):-%N}:A:h:h}"   # path for system configs
 export EDITOR=nvim                      # default text editor
 export HOMEBREW_NO_ENV_HINTS=1          # Disable brew hints
 export HOMEBREW_NO_ASK=1                # Disable brew hints
-export GOPATH=$HOME/.local/share/go     # Save path for go packages
+export GOPATH="$HOME/.local/share/go"   # Save path for go packages
 
-[[ ":$PATH:" != *":$HOME/.local/bin:"* ]] && \
-    PATH="${PATH%:}:$HOME/.local/bin:/opt/homebrew/bin"
+# Hardcoded rather than `eval "$(brew shellenv)"`, which forks brew per shell
+export HOMEBREW_PREFIX=/opt/homebrew
+
+# PATH. `typeset -U` keeps it deduplicated, so no guard is needed and
+# re-sourcing .zshrc is harmless. Homebrew goes ahead of the system dirs so
+# its binaries win over the macOS copies.
+typeset -U path
+path=(
+    "$HOME/.local/bin"
+    "$GOPATH/bin"
+    $HOMEBREW_PREFIX/{bin,sbin}
+    $path
+)
 
 # Initialise the system
 source "$DOTFILES/zsh/init.zsh"

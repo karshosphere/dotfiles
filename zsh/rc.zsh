@@ -11,6 +11,7 @@
 # System specific configs
 export DOTFILES="${${(%):-%N}:A:h:h}"   # path for system configs
 export EDITOR=nvim
+export GISTS="$HOME/.local/gists"       # path for gist scripts
 
 [[ $PATH != *"$HOME/.local/bin" ]] && PATH="${PATH%:}:"$HOME/.local/bin""
 

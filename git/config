@@ -65,8 +65,8 @@
     s  = stash list
     ss = stash
     sn = stash push -m
-    sp = stash pop
-    sd = stash drop
+    sp = !$GISTS/git_fuzzy.sh stash_pop
+    sd = !$GISTS/git_fuzzy.sh stash_drop
     sc = stash show
 
     t  = tag --list

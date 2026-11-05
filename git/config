@@ -23,6 +23,7 @@
     br = branch --move
     bd = !$GISTS/git_fuzzy.sh branch_delete
     bf = !$GISTS/git_fuzzy.sh branch_local
+    bc = !$GISTS/git_fuzzy.sh branch_check
 
     c  = commit
     cm = commit --message
@@ -77,6 +78,7 @@
     w  = worktree list
     wa = !$GISTS/git_fuzzy.sh worktree_add
     wd = !$GISTS/git_fuzzy.sh worktree_delete
+    wc = !$GISTS/git_fuzzy.sh worktree_check
     wr = worktree remove
     wx = worktree prune
 

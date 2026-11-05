@@ -49,6 +49,21 @@ alias update='
     sudo apt --fix-broken install -y > /dev/null 2>&1
     echo
 
+    figlet "Repos Pull" | lolcat -t -S 10
+    pushd $DOTFILES > /dev/null && {
+        git pull
+        pushd generic > /dev/null && {
+            git switch main
+            git pull
+            git switch "chore/work-system"
+            git rebase main
+            popd > /dev/null
+        }
+        popd > /dev/null
+    }
+    pushd $GISTS > /dev/null && { git pull; popd > /dev/null }
+    echo
+
     figlet "Vim Plugins" | lolcat -t -S 10
     vim --headless +"lua vim.pack.update()" +"wq" +qa | lolcat
     echo -e "\n"

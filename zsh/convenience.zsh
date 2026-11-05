@@ -25,8 +25,8 @@ alias pkgx='sudo apt autoremove; sudo apt autoclean'
 
 alias update='
     sudo figlet "System Packages";
-    sudo apt upgrade;
-    sudo apt update;
+    sudo apt upgrade -y;
+    sudo apt update -y;
 
     figlet "Karnull Approved";
     pushd ~/.config/dotfiles > /dev/null && {

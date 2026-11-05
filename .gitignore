@@ -1,7 +1,7 @@
 
 # .gitignore
 
-**/nvim/pack-lock.json
+**/nvim/nvim-pack-lock.json
 **/zsh/hacks.zsh
 
 generic/

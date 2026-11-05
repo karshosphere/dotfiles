@@ -79,7 +79,6 @@
     wa = !$GISTS/git_fuzzy.sh worktree_add
     wd = !$GISTS/git_fuzzy.sh worktree_delete
     wc = !$GISTS/git_fuzzy.sh worktree_check
-    wr = worktree remove
     wx = worktree prune
 
     x  = reset --soft

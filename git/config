@@ -16,13 +16,13 @@
     ar = restore --staged
 
     b  = branch --all
-    bs = !$DOTFILES/git/fuzzy.sh branch_switch
+    bs = !$GISTS/git_fuzzy.sh branch_switch
     bl = switch -
     bo = switch --track
     bn = switch --create
     br = branch --move
-    bd = !$DOTFILES/git/fuzzy.sh branch_delete
-    bf = !$DOTFILES/git/fuzzy.sh branch_local
+    bd = !$GISTS/git_fuzzy.sh branch_delete
+    bf = !$GISTS/git_fuzzy.sh branch_local
 
     c  = commit
     cm = commit --message
@@ -59,7 +59,7 @@
     rx = rebase --abort
     rs = rebase --skip
     rc = rebase --continue
-    rb = !$DOTFILES/git/fuzzy.sh rebase_branch
+    rb = !$GISTS/git_fuzzy.sh rebase_branch
 
     s  = stash list
     ss = stash
@@ -75,8 +75,8 @@
     ui = !lazygit
 
     w  = worktree list
-    wa = !$DOTFILES/git/fuzzy.sh worktree_add
-    wd = !$DOTFILES/git/fuzzy.sh worktree_delete
+    wa = !$GISTS/git_fuzzy.sh worktree_add
+    wd = !$GISTS/git_fuzzy.sh worktree_delete
     wr = worktree remove
     wx = worktree prune
 

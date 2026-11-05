@@ -15,6 +15,7 @@ Thumbs.db
 # Personal tooling
 ,*
 .commands
+.worktrees/
 
 # AI instruction
 .claude/settings.local.json

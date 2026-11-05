@@ -11,6 +11,7 @@
 # System specific configs
 export DOTFILES="${${(%):-%N}:A:h:h}"   # path for system configs
 export EDITOR=/opt/nvim-linux-x86_64/bin/nvim
+export GISTS="$HOME/.local/gists"       # path for gist scripts
 [[ ":$PATH:" != *":$HOME/.local/bin:"* ]] && PATH="$HOME/.local/bin:$PATH"
 
 # nrfutil autocomplete

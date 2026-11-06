@@ -1,63 +1,62 @@
 # Dotfiles
 
-This repository contains my system configuration files. At a high level, shared
-configuration is kept separate from system‑specific configuration, and Git
-worktrees are used to bring them together cleanly:
+Karnull's terminal setup: zsh, tmux and Neovim, shared across a Mac, a home
+server, a Raspberry Pi and a work machine. Anything every machine uses lives on
+`main`; anything tied to one machine lives on that machine's `sys/` branch and
+links back to the rest.
 
-* Shared, system‑agnostic configuration lives in `main`
-* System‑specific configuration lives in dedicated `sys/` branches
-* Git worktrees are used to combine both cleanly
-
-
-## Branch layout
-
-### Core branch
-
-* `main`: Contains all generic configuration that is shared across systems.
-          Nothing here should depend on a specific operating system or machine.
+![](.media/system.png)
 
 
-### System‑specific branches
+## What's in here
 
-Each system has its own branch. These branches contain only configuration files
-that are unique to that system, along with symlinks that point back to files in
-the main worktree.
-
-Current systems:
-
-* [`sys/cloud`](https://github.com/karnull/dotfiles/tree/sys/cloud):
-    my self-hosted, customised linux mint server
-
-* [`sys/darwin`](https://github.com/karnull/dotfiles/tree/sys/darwin):
-    the main branch for my macos daily driver
-
-* [`sys/edge`](https://github.com/karnull/dotfiles/tree/sys/edge):
-    setup for my raspberrypi edge server
-
-* [`sys/wsl`](https://github.com/karnull/dotfiles/tree/sys/wsl):
-    windows subsystem for linux system
+| Path        | What it is                                                                 |
+|-------------|----------------------------------------------------------------------------|
+| `zsh/`      | Shell config split by job, mostly lazy-loaded so the prompt comes up fast  |
+| `zplugins/` | Vendored zsh plugins: defer, syntax highlighting and devedit               |
+| `tmux/`     | tmux with window templates, an fzf session switcher and a ghostnet popup   |
+| `nvim/`     | Neovim on the built-in `vim.pack`, with plugins loaded after startup       |
+| `vimrc`     | Plain Vim, for when Neovim isn't around (claude ctrl+g in docker)          |
+| `git/`      | Git defaults, fzf-powered aliases and a global ignore                      |
 
 
+## How it fits together
 
-### Legacy branches
+Each machine checks out its `sys/` branch and puts `main` beside it as a
+worktree at `generic/`. Files on a `sys/` branch are either specific to that
+machine or symlinks into `generic/`, so overriding a shared file just means
+swapping the symlink for a real one.
 
-These are no longer actively used, but kept for reference.
-
-* [`x/tools`](https://github.com/karnull/dotfiles/tree/x/tools):
-    Configs for tools I no longer use
-
-* [`x/system`](https://github.com/karnull/dotfiles/tree/x/system):
-    Old layout where everything lived in one branch with per‑system folders
-
-* [`x/star`](https://github.com/karnull/dotfiles/tree/x/star):
-    Super old dotfiles, from when daily driving gnu/linux
+Shared changes made on a machine go on a `chore/<system>-updates` branch, such
+as `chore/cloud-updates`, and come back to `main` as a pull request. Every other
+machine picks them up on its next update.
 
 
+## Systems
 
-## Installation
+* [`sys/darwin`](https://github.com/karshosphere/dotfiles/tree/sys/darwin):
+  the macOS daily driver
+* [`sys/cloud`](https://github.com/karshosphere/dotfiles/tree/sys/cloud):
+  a self-hosted Linux Mint server
+* [`sys/edge`](https://github.com/karshosphere/dotfiles/tree/sys/edge):
+  a Raspberry Pi edge server
+* [`sys/wsl`](https://github.com/karshosphere/dotfiles/tree/sys/wsl):
+  the work machine, on Windows Subsystem for Linux
 
-Setup is handled by a shell installer kept outside this repository:
+Retired, but kept for reference:
+
+* [`x/tools`](https://github.com/karshosphere/dotfiles/tree/x/tools):
+  configs for tools no longer in use
+* [`x/system`](https://github.com/karshosphere/dotfiles/tree/x/system):
+  the old layout, one branch with a folder per system
+* [`x/star`](https://github.com/karshosphere/dotfiles/tree/x/star):
+  the original dotfiles, from the GNU/Linux daily-driver days
+
+
+## Install
+
+The installer is a shell script kept outside this repository:
+
 ```bash
 wget -O - https://karsh.page/terminal | sh
 ```
-

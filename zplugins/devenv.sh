@@ -28,7 +28,7 @@ cat <<'EOF'
 Usage: script [action] [args...]
 
 Actions:
-  up              start devcontainer
+  up              start devcontainer, or create one from the project image
   down            stop devcontainer
   restart         restart devcontainer
   delete          delete devcontainer
@@ -66,11 +66,53 @@ get_container_name() {
     _out="${PWD##*/}"
 }
 
+get_project_name() {
+    local main_worktree
+    main_worktree=$(git worktree list --porcelain 2>/dev/null | sed -n '1s/^worktree //p')
+    basename "${main_worktree:-$PWD}"
+}
+
+# VS Code tags its images vsc-<folder>-<hash>[-features]-uid, folder lowercased
+find_project_image() {
+    local project
+    project=$(get_project_name | tr '[:upper:]' '[:lower:]' | tr -cd 'a-z0-9._-')
+    project=${project//./\\.}
+
+    docker image ls --format '{{.Repository}}' \
+        | grep -E -m 1 "^vsc-${project}-[0-9a-f]{16,}(-features)?-uid$"
+}
+
+create_container() {
+    local mounts=(-v "$PWD:/workspaces/${PWD##*/}")
+    local git_dir
+    git_dir=$(git rev-parse --path-format=absolute --git-common-dir 2>/dev/null)
+
+    # a worktree's .git file points at the main repo by absolute path
+    if [ -n "$git_dir" ] && [ "$git_dir" != "$PWD/.git" ]; then
+        mounts+=(-v "$git_dir:$git_dir")
+    fi
+
+    docker run -d --init --name "$1" \
+        "${mounts[@]}" \
+        -w "/workspaces/${PWD##*/}" \
+        --label "devcontainer.local_folder=$PWD" \
+        --label "devcontainer.config_file=$PWD/.devcontainer/devcontainer.json" \
+        --entrypoint sleep "$2" infinity
+}
+
 start_container() {
     if docker container inspect "$1" >/dev/null 2>&1; then
         docker start "$1"
+        return
+    fi
+
+    echo -e "\033[33m! No existing container with the name $1\033[0m"
+
+    local image
+    if [ ! -f ".devcontainer/compose.yaml" ] && image=$(find_project_image); then
+        echo -e "\033[34m! Creating it from the image $image\033[0m"
+        create_container "$1" "$image"
     else
-        echo -e "\033[33m! No existing container with the name $1\033[0m"
         echo -e "\033[34m! Starting visual studio code to build\033[0m"
         code .
     fi

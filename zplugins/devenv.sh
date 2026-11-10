@@ -21,7 +21,7 @@ fi
 
 show_help() {
 cat <<'EOF'
-Usage: script [action] [args...]
+Usage: d [action] [args...]
 
 Actions:
   up              start devcontainer, or create one from the project image

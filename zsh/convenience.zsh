@@ -35,6 +35,7 @@ alias killnrfconnect='pkill -9 -f "/opt/nrf-desktop/nrfconnect" >/dev/null 2>&1 
 alias ttya='watch -n 1 -q 60 '\''find /dev -maxdepth 1 -name "ttyA*"'\'''
 
 alias d=$DOTFILES/zplugins/devenv.sh
+fpath+=("$DOTFILES/zplugins/completions")   # before compinit, which init.zsh runs later
 
 
 #- System Packages ---------------------------------------------------------------------------------

@@ -16,13 +16,12 @@ fi
 # default behaviour (no args)
 
 if [ -z "$ACTION" ]; then
-    lazydocker
-    exit 0
+    exec lazydocker
 fi
 
 show_help() {
 cat <<'EOF'
-Usage: script [action] [args...]
+Usage: d [action] [args...]
 
 Actions:
   up              start devcontainer, or create one from the project image
@@ -32,7 +31,8 @@ Actions:
   exec <CMD>      run CMD in devcontainer
   run [ARGS]      run ./run.sh ARGS in devcontainer
   connect         open shell in devcontainer
-  list            list docker containers
+  list            list running containers, with short image hashes
+  clean           remove devcontainers whose project folder is gone
 
 Default:
   <no action>     open lazydocker
@@ -45,12 +45,24 @@ EOF
 #-------------------------------------------------------------------------------
 # helper function
 
+get_compose_file() {
+    local file
+    for file in .devcontainer/{compose,docker-compose}.{yaml,yml}; do
+        if [ -f "$file" ]; then
+            echo "$file"
+            return 0
+        fi
+    done
+    return 1
+}
+
 get_container_name() {
     local -n _out=$1
-    local result
+    local file result
 
-    if [ -f ".devcontainer/compose.yaml" ]; then
-        result=$(grep '^[[:space:]]*name:' .devcontainer/compose.yaml | cut -d ' ' -f 2)
+    # only the top-level name: is the project, services have their own
+    if file=$(get_compose_file); then
+        result=$(sed -n "s/^name:[[:space:]]*['\"]\{0,1\}\([^'\" #]*\).*/\1/p" "$file" | head -n 1)
         if [ -n "$result" ]; then
             _out="$result"
             return 0
@@ -103,7 +115,7 @@ start_container() {
     echo -e "\033[33m! No existing container with the name $1\033[0m"
 
     local image
-    if [ ! -f ".devcontainer/compose.yaml" ] && image=$(find_project_image); then
+    if ! get_compose_file >/dev/null && image=$(find_project_image); then
         echo -e "\033[34m! Creating it from the image $image\033[0m"
         create_container "$1" "$image"
     else
@@ -112,9 +124,58 @@ start_container() {
     fi
 }
 
+# shortens image hashes to abc...xyz, and aligns in awk so column isn't needed
+list_containers() {
+    {
+        printf 'NAMES\tIMAGE\tSTATUS\tPORTS\n'
+        docker container list --format '{{.Names}}\t{{.Image}}\t{{.Status}}\t{{.Ports}}'
+    } | sed -E 's/^([^\t]*\t[^\t]*-[0-9a-f]{3})[0-9a-f]{10,}([0-9a-f]{3})/\1...\2/' \
+      | awk -F'\t' '
+        {
+            for (i = 1; i <= NF; i++) {
+                cell[NR, i] = $i
+                if (length($i) > width[i]) width[i] = length($i)
+            }
+            if (NF > cols) cols = NF
+        }
+        END {
+            for (r = 1; r <= NR; r++) {
+                line = ""
+                for (i = 1; i < cols; i++) line = line sprintf("%-" width[i] + 3 "s", cell[r, i])
+                line = line cell[r, cols]
+                sub(/ +$/, "", line)
+                print line
+            }
+        }'
+}
+
+# containers d up or VS Code made carry the folder they were made for
+clean_containers() {
+    local name folder answer stale=()
+
+    while IFS=$'\t' read -r name folder; do
+        [[ "$name" == *-devcontainer && "$folder" == /* && ! -d "$folder" ]] &&
+            stale+=("$name")
+    done < <(docker ps -a --filter label=devcontainer.local_folder \
+        --format '{{.Names}}\t{{.Label "devcontainer.local_folder"}}')
+
+    if (( ${#stale[@]} == 0 )); then
+        echo -e "\033[32mNothing to clean\033[0m"
+        return 0
+    fi
+
+    printf '%s\n' "${stale[@]}"
+    read -r -p "Remove these containers? [y/N] " answer
+    [[ "$answer" == [yY]* ]] || return 1
+    docker rm -f "${stale[@]}"
+}
+
 exec_in_container() {
+    local flags=(-i)
+    [ -t 0 ] && [ -t 1 ] && flags+=(-t)
+
     get_container_name CONTAINER
-    docker exec -w "/workspaces/`basename "$PWD"/`" "$CONTAINER-devcontainer" sh -c "$1"
+    docker exec "${flags[@]}" -w "/workspaces/`basename "$PWD"/`" "$CONTAINER-devcontainer" sh -c "$1"
 }
 
 
@@ -125,56 +186,53 @@ case "$ACTION" in
     start|up)
         get_container_name CONTAINER
         start_container "$CONTAINER-devcontainer"
-        exit 0
         ;;
 
     stop|down)
         get_container_name CONTAINER
         docker stop "$CONTAINER-devcontainer"
-        exit 0
         ;;
 
-    restart|r)
+    restart)
         get_container_name CONTAINER
-        docker stop "$CONTAINER-devcontainer"
-        start_container "$CONTAINER-devcontainer"
-        exit 0
+        docker stop "$CONTAINER-devcontainer" &&
+            start_container "$CONTAINER-devcontainer"
         ;;
 
     delete|rm)
         get_container_name CONTAINER
-        docker rm "$CONTAINER-devcontainer"
-        exit 0
+        docker rm -f "$CONTAINER-devcontainer"
         ;;
 
-    exec|e)
+    exec)
         if [ -z "$1" ]; then
             echo -e "\033[31mError: no command provided\033[0m"
             exit 1
         fi
         exec_in_container "$*"
-        exit 0
         ;;
 
     run)
-        exec_in_container "./run.sh $*"
-        exit 0
+        COMMAND="./run.sh"
+        (( $# )) && COMMAND+=" $(printf '%q ' "$@")"
+        exec_in_container "$COMMAND"
         ;;
 
-    connect|c)
+    connect)
         get_container_name CONTAINER
-        docker exec -ti "$CONTAINER-devcontainer" bash
-        exit 0
+        docker exec -ti -w "/workspaces/${PWD##*/}" "$CONTAINER-devcontainer" bash
         ;;
 
-    list|l|ls)
-        docker container list
-        exit 0
+    list|ls)
+        list_containers
         ;;
 
-    --help|-h|help|h)
+    clean)
+        clean_containers
+        ;;
+
+    --help|-h|help)
         show_help
-        exit 0
         ;;
 
     *)

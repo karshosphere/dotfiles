@@ -1,0 +1,16 @@
+#compdef devenv.sh
+
+local -a actions=(
+    'up:start the devcontainer, or create one from the project image'
+    'down:stop the devcontainer'
+    'restart:restart the devcontainer'
+    'delete:delete the devcontainer'
+    'exec:run a command in the devcontainer'
+    'run:run ./run.sh in the devcontainer'
+    'connect:open a shell in the devcontainer'
+    'list:list running containers'
+    'clean:remove devcontainers whose project folder is gone'
+    'help:show the help'
+)
+
+(( CURRENT == 2 )) && _describe 'action' actions

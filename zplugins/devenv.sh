@@ -32,6 +32,7 @@ Actions:
   run [ARGS]      run ./run.sh ARGS in devcontainer
   connect         open shell in devcontainer
   list            list running containers, with short image hashes
+  clean           remove devcontainers whose project folder is gone
 
 Default:
   <no action>     open lazydocker
@@ -148,6 +149,27 @@ list_containers() {
         }'
 }
 
+# containers d up or VS Code made carry the folder they were made for
+clean_containers() {
+    local name folder answer stale=()
+
+    while IFS=$'\t' read -r name folder; do
+        [[ "$name" == *-devcontainer && "$folder" == /* && ! -d "$folder" ]] &&
+            stale+=("$name")
+    done < <(docker ps -a --filter label=devcontainer.local_folder \
+        --format '{{.Names}}\t{{.Label "devcontainer.local_folder"}}')
+
+    if (( ${#stale[@]} == 0 )); then
+        echo -e "\033[32mNothing to clean\033[0m"
+        return 0
+    fi
+
+    printf '%s\n' "${stale[@]}"
+    read -r -p "Remove these containers? [y/N] " answer
+    [[ "$answer" == [yY]* ]] || return 1
+    docker rm -f "${stale[@]}"
+}
+
 exec_in_container() {
     local flags=(-i)
     [ -t 0 ] && [ -t 1 ] && flags+=(-t)
@@ -203,6 +225,10 @@ case "$ACTION" in
 
     list|ls)
         list_containers
+        ;;
+
+    clean)
+        clean_containers
         ;;
 
     --help|-h|help)

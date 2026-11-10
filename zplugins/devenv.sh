@@ -33,6 +33,7 @@ Actions:
   restart         restart devcontainer
   delete          delete devcontainer
   exec <CMD>      run CMD in devcontainer
+  run [ARGS]      run ./run.sh ARGS in devcontainer
   connect         open shell in devcontainer
   list            list docker containers
 
@@ -118,6 +119,11 @@ start_container() {
     fi
 }
 
+exec_in_container() {
+    get_container_name CONTAINER
+    docker exec -w "/workspaces/`basename "$PWD"/`" "$CONTAINER-devcontainer" sh -c "$1"
+}
+
 
 #-------------------------------------------------------------------------------
 # special commands
@@ -153,8 +159,12 @@ case "$ACTION" in
             echo -e "\033[31mError: no command provided\033[0m"
             exit 1
         fi
-        get_container_name CONTAINER
-        docker exec -w "/workspaces/`basename "$PWD"/`" "$CONTAINER-devcontainer" sh -c "$*"
+        exec_in_container "$*"
+        exit 0
+        ;;
+
+    run)
+        exec_in_container "./run.sh $*"
         exit 0
         ;;
 

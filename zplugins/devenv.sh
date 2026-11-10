@@ -44,12 +44,24 @@ EOF
 #-------------------------------------------------------------------------------
 # helper function
 
+get_compose_file() {
+    local file
+    for file in .devcontainer/{compose,docker-compose}.{yaml,yml}; do
+        if [ -f "$file" ]; then
+            echo "$file"
+            return 0
+        fi
+    done
+    return 1
+}
+
 get_container_name() {
     local -n _out=$1
-    local result
+    local file result
 
-    if [ -f ".devcontainer/compose.yaml" ]; then
-        result=$(grep '^[[:space:]]*name:' .devcontainer/compose.yaml | cut -d ' ' -f 2)
+    # only the top-level name: is the project, services have their own
+    if file=$(get_compose_file); then
+        result=$(sed -n "s/^name:[[:space:]]*['\"]\{0,1\}\([^'\" #]*\).*/\1/p" "$file" | head -n 1)
         if [ -n "$result" ]; then
             _out="$result"
             return 0
@@ -102,7 +114,7 @@ start_container() {
     echo -e "\033[33m! No existing container with the name $1\033[0m"
 
     local image
-    if [ ! -f ".devcontainer/compose.yaml" ] && image=$(find_project_image); then
+    if ! get_compose_file >/dev/null && image=$(find_project_image); then
         echo -e "\033[34m! Creating it from the image $image\033[0m"
         create_container "$1" "$image"
     else

@@ -1,11 +1,8 @@
 #!/usr/bin/env bash
 
 # Wrapper around docker commands to standardise devcontainer development
-# utilising gh:karnull/switchboard.nvim .commands file.
-# shortcuts to generalise common commands that differ consistently across projects
 # devcontainer-cli isn't a dependency
 
-COMMANDS_FILE=".commands"
 ACTION=$1
 shift
 
@@ -40,12 +37,8 @@ Actions:
 Default:
   <no action>     open lazydocker
 
-Other:
-  <action>        run entry from .commands file
-
 Notes:
   - runs from git repo root if present
-  - requires .commands for custom actions
 EOF
 }
 
@@ -183,31 +176,9 @@ case "$ACTION" in
         show_help
         exit 0
         ;;
+
+    *)
+        echo -e "\033[31mUnknown action: $ACTION\033[0m"
+        exit 1
+        ;;
 esac
-
-
-#-------------------------------------------------------------------------------
-# require .commands file from here
-
-if [ ! -f "$COMMANDS_FILE" ]; then
-    echo -e "\033[32mCommands file not found\033[0m"
-    exit 1
-fi
-
-# fallback: treat as generic action from .commands
-RAW_COMMAND=$(grep "$ACTION\s*\=" "$COMMANDS_FILE" | cut -d "'" -f 2)
-
-if [ -z "$RAW_COMMAND" ]; then
-    echo -e "\033[31mUnknown action: $ACTION\033[0m"
-    exit 1
-fi
-
-# substitute $@ placeholder if present, otherwise append args
-if [[ "$RAW_COMMAND" == *'$@'* ]]; then
-    COMMAND="${RAW_COMMAND//\$@/$*}"
-else
-    COMMAND="$RAW_COMMAND $*"
-fi
-
-echo -e "\033[34m> $COMMAND\033[0m"
-eval "$COMMAND"

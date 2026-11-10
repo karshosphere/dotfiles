@@ -171,7 +171,7 @@ case "$ACTION" in
         docker stop "$CONTAINER-devcontainer"
         ;;
 
-    restart|r)
+    restart)
         get_container_name CONTAINER
         docker stop "$CONTAINER-devcontainer" &&
             start_container "$CONTAINER-devcontainer"
@@ -182,7 +182,7 @@ case "$ACTION" in
         docker rm -f "$CONTAINER-devcontainer"
         ;;
 
-    exec|e)
+    exec)
         if [ -z "$1" ]; then
             echo -e "\033[31mError: no command provided\033[0m"
             exit 1
@@ -196,16 +196,16 @@ case "$ACTION" in
         exec_in_container "$COMMAND"
         ;;
 
-    connect|c)
+    connect)
         get_container_name CONTAINER
         docker exec -ti -w "/workspaces/${PWD##*/}" "$CONTAINER-devcontainer" bash
         ;;
 
-    list|l|ls)
+    list|ls)
         list_containers
         ;;
 
-    --help|-h|help|h)
+    --help|-h|help)
         show_help
         ;;
 

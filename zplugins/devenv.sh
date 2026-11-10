@@ -191,7 +191,9 @@ case "$ACTION" in
         ;;
 
     run)
-        exec_in_container "./run.sh $*"
+        COMMAND="./run.sh"
+        (( $# )) && COMMAND+=" $(printf '%q ' "$@")"
+        exec_in_container "$COMMAND"
         ;;
 
     connect|c)

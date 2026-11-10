@@ -32,7 +32,7 @@ Actions:
   exec <CMD>      run CMD in devcontainer
   run [ARGS]      run ./run.sh ARGS in devcontainer
   connect         open shell in devcontainer
-  list            list docker containers
+  list            list running containers, with short image hashes
 
 Default:
   <no action>     open lazydocker
@@ -112,6 +112,31 @@ start_container() {
     fi
 }
 
+# shortens image hashes to abc...xyz, and aligns in awk so column isn't needed
+list_containers() {
+    {
+        printf 'NAMES\tIMAGE\tSTATUS\tPORTS\n'
+        docker container list --format '{{.Names}}\t{{.Image}}\t{{.Status}}\t{{.Ports}}'
+    } | sed -E 's/^([^\t]*\t[^\t]*-[0-9a-f]{3})[0-9a-f]{10,}([0-9a-f]{3})/\1...\2/' \
+      | awk -F'\t' '
+        {
+            for (i = 1; i <= NF; i++) {
+                cell[NR, i] = $i
+                if (length($i) > width[i]) width[i] = length($i)
+            }
+            if (NF > cols) cols = NF
+        }
+        END {
+            for (r = 1; r <= NR; r++) {
+                line = ""
+                for (i = 1; i < cols; i++) line = line sprintf("%-" width[i] + 3 "s", cell[r, i])
+                line = line cell[r, cols]
+                sub(/ +$/, "", line)
+                print line
+            }
+        }'
+}
+
 exec_in_container() {
     get_container_name CONTAINER
     docker exec -w "/workspaces/`basename "$PWD"/`" "$CONTAINER-devcontainer" sh -c "$1"
@@ -168,7 +193,7 @@ case "$ACTION" in
         ;;
 
     list|l|ls)
-        docker container list
+        list_containers
         exit 0
         ;;
 

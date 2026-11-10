@@ -16,8 +16,7 @@ fi
 # default behaviour (no args)
 
 if [ -z "$ACTION" ]; then
-    lazydocker
-    exit 0
+    exec lazydocker
 fi
 
 show_help() {
@@ -150,26 +149,22 @@ case "$ACTION" in
     start|up)
         get_container_name CONTAINER
         start_container "$CONTAINER-devcontainer"
-        exit 0
         ;;
 
     stop|down)
         get_container_name CONTAINER
         docker stop "$CONTAINER-devcontainer"
-        exit 0
         ;;
 
     restart|r)
         get_container_name CONTAINER
-        docker stop "$CONTAINER-devcontainer"
-        start_container "$CONTAINER-devcontainer"
-        exit 0
+        docker stop "$CONTAINER-devcontainer" &&
+            start_container "$CONTAINER-devcontainer"
         ;;
 
     delete|rm)
         get_container_name CONTAINER
         docker rm "$CONTAINER-devcontainer"
-        exit 0
         ;;
 
     exec|e)
@@ -178,28 +173,23 @@ case "$ACTION" in
             exit 1
         fi
         exec_in_container "$*"
-        exit 0
         ;;
 
     run)
         exec_in_container "./run.sh $*"
-        exit 0
         ;;
 
     connect|c)
         get_container_name CONTAINER
         docker exec -ti "$CONTAINER-devcontainer" bash
-        exit 0
         ;;
 
     list|l|ls)
         list_containers
-        exit 0
         ;;
 
     --help|-h|help|h)
         show_help
-        exit 0
         ;;
 
     *)

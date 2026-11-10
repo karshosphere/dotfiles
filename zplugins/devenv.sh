@@ -149,8 +149,11 @@ list_containers() {
 }
 
 exec_in_container() {
+    local flags=(-i)
+    [ -t 0 ] && [ -t 1 ] && flags+=(-t)
+
     get_container_name CONTAINER
-    docker exec -w "/workspaces/`basename "$PWD"/`" "$CONTAINER-devcontainer" sh -c "$1"
+    docker exec "${flags[@]}" -w "/workspaces/`basename "$PWD"/`" "$CONTAINER-devcontainer" sh -c "$1"
 }
 
 

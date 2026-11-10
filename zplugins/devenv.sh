@@ -198,7 +198,7 @@ case "$ACTION" in
 
     connect|c)
         get_container_name CONTAINER
-        docker exec -ti "$CONTAINER-devcontainer" bash
+        docker exec -ti -w "/workspaces/${PWD##*/}" "$CONTAINER-devcontainer" bash
         ;;
 
     list|l|ls)

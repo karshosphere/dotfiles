@@ -179,7 +179,7 @@ case "$ACTION" in
 
     delete|rm)
         get_container_name CONTAINER
-        docker rm "$CONTAINER-devcontainer"
+        docker rm -f "$CONTAINER-devcontainer"
         ;;
 
     exec|e)

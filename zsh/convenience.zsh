@@ -38,6 +38,12 @@ alias d=$DOTFILES/zplugins/devenv.sh
 fpath+=("$DOTFILES/zplugins/completions")   # before compinit, which init.zsh runs later
 
 
+#- Telemetry ---------------------------------------------------------------------------------------
+
+# tmux-telemetry sets TELEMETRY_HOME; this adds its prompt hook and the telemetry command
+[[ -n $TELEMETRY_HOME ]] && source "$TELEMETRY_HOME/telemetry.zsh"
+
+
 #- System Packages ---------------------------------------------------------------------------------
 
 alias pkga='sudo apt install --no-install-recommends'

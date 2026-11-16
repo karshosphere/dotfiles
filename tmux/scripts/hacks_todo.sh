@@ -8,7 +8,7 @@
 
 set -euo pipefail
 
-SESSION="ghostnet"
+GHOSTNET="$(dirname "$0")/ghostnet.sh"
 WINDOW="todo"
 TODO_FILE="$HOME/.local/state/todo"
 
@@ -17,8 +17,8 @@ touch "$TODO_FILE"
 #-------------------------------------------------------------------------------
 case "${1:-}" in
     switch)
-        tmux has-session -t "$SESSION" 2>/dev/null || \
-            tmux new-session -d -s "$SESSION"
+        "$GHOSTNET" ensure
+        SESSION="$("$GHOSTNET" id)"
 
         if ! tmux list-windows -t "$SESSION" -F '#{window_name}' |
              grep -Fxq "$WINDOW"; then
@@ -33,6 +33,7 @@ case "${1:-}" in
     ;;
 
     add)
+        SESSION="$("$GHOSTNET" id)"
         user_input_tmp=$(mktemp)
         formatted_todo_tmp=$(mktemp)
 
